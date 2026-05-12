@@ -23,7 +23,10 @@ export default function Card() {
     const [pokemon, setData] = useState<Pokemon | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const apiUsers = "https://pokeapi.co/api/v2/pokemon/pikachu";
+    const [pokeInput, SetPokeInput] = useState<string>("pikachu");
+    const [apiUsers, setapiUsers] = useState<string>(
+        `https://pokeapi.co/api/v2/pokemon/${pokeInput}`,
+    );
     useEffect(() => {
         async function loadPokemon() {
             try {
@@ -44,36 +47,57 @@ export default function Card() {
         }
 
         loadPokemon();
-    }, []);
+    }, [apiUsers]);
+    const handleSearchPokemon = () => {
+        setapiUsers("https://pokeapi.co/api/v2/pokemon/");
+        // Hello World
+    };
 
     if (loading) return <>Carregando...</>;
     if (error) return <>Erro: {error}</>;
     if (!pokemon) return <>Nenhum dado encontrado.</>;
     return (
-        <div className="card">
-            <img src={pokemon.sprites.front_default} alt={pokemon.name} />
+        <>
+            <input
+                type="text"
+                placeholder="Nome do pokemon"
+                value={pokeInput}
+                onChange={(e) => SetPokeInput(e.target.value)}
+            />
+            <button
+                onClick={() =>
+                    setapiUsers(
+                        "https://pokeapi.co/api/v2/pokemon/" + pokeInput,
+                    )
+                }
+            >
+                Procurar
+            </button>
+            <div className="card">
+                <img src={pokemon?.sprites.front_default} alt={pokemon?.name} />
 
-            <h2>{pokemon.name}</h2>
+                <h2>{pokemon.name}</h2>
 
-            <div className="card-info">
-                <div className="info-box">
-                    <span>Height</span>
-                    <strong>{pokemon.height}</strong>
-                </div>
-
-                <div className="info-box">
-                    <span>Weight</span>
-                    <strong>{pokemon.weight}</strong>
-                </div>
-            </div>
-
-            <div className="types">
-                {pokemon.types.map((item) => (
-                    <div className="type" key={item.type.name}>
-                        {item.type.name}
+                <div className="card-info">
+                    <div className="info-box">
+                        <span>Height</span>
+                        <strong>{pokemon.height}</strong>
                     </div>
-                ))}
+
+                    <div className="info-box">
+                        <span>Weight</span>
+                        <strong>{pokemon.weight}</strong>
+                    </div>
+                </div>
+
+                <div className="types">
+                    {pokemon.types.map((item) => (
+                        <div className="type" key={item.type.name}>
+                            {item.type.name}
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
